@@ -16,7 +16,9 @@ from app.schemas.user import UserResponse, Token
 
 Base = declarative_base()
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Use a pure-Python backend to avoid dependency issues with the bcrypt C extension
+# pbkdf2_sha256 is widely supported and suitable for tests and demos
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 # Move to config
 SECRET_KEY = "your-secret-key"

@@ -3,6 +3,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from app.database import Base
 
+
 class Calculation(Base):
     __tablename__ = "calculations"
     id = Column(Integer, primary_key=True)
@@ -26,29 +27,37 @@ class Calculation(Base):
     def get_result(self):
         return None
 
+
 class Addition(Calculation):
     __mapper_args__ = {"polymorphic_identity": "addition"}
+
     def get_result(self):
         return sum(self.inputs)
 
+
 class Subtraction(Calculation):
     __mapper_args__ = {"polymorphic_identity": "subtraction"}
+
     def get_result(self):
         result = self.inputs[0]
         for value in self.inputs[1:]:
             result -= value
         return result
 
+
 class Multiplication(Calculation):
     __mapper_args__ = {"polymorphic_identity": "multiplication"}
+
     def get_result(self):
         result = 1
         for value in self.inputs:
             result *= value
         return result
 
+
 class Division(Calculation):
     __mapper_args__ = {"polymorphic_identity": "division"}
+
     def get_result(self):
         result = self.inputs[0]
         for value in self.inputs[1:]:

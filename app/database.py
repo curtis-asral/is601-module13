@@ -6,6 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from .config import settings
 
+
 def get_engine(database_url: str = settings.DATABASE_URL):
     """
     Create and return a new SQLAlchemy engine.
@@ -24,6 +25,7 @@ def get_engine(database_url: str = settings.DATABASE_URL):
         print(f"Error creating engine: {e}")
         raise
 
+
 def get_sessionmaker(engine):
     """
     Create and return a new sessionmaker.
@@ -36,9 +38,10 @@ def get_sessionmaker(engine):
     """
     return sessionmaker(
         autocommit=False,  # Disable autocommit to control transactions manually
-        autoflush=False,   # Disable autoflush to control when changes are sent to the DB
-        bind=engine        # Bind the sessionmaker to the provided engine
+        autoflush=False,  # Disable autoflush to control when changes are sent to the DB
+        bind=engine,  # Bind the sessionmaker to the provided engine
     )
+
 
 # Initialize engine and SessionLocal using the factory functions
 engine = get_engine()
@@ -46,6 +49,7 @@ SessionLocal = get_sessionmaker(engine)
 
 # Base declarative class that our models will inherit from
 Base = declarative_base()
+
 
 def get_db():
     """

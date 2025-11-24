@@ -3,8 +3,10 @@ from uuid import UUID
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, ConfigDict
 
+
 class UserResponse(BaseModel):
     """Schema for user response data"""
+
     id: UUID
     username: str
     email: EmailStr
@@ -20,6 +22,7 @@ class UserResponse(BaseModel):
 
 class Token(BaseModel):
     """Schema for authentication token response"""
+
     access_token: str
     token_type: str = "bearer"
     user: UserResponse
@@ -47,11 +50,13 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     """Schema for JWT token payload"""
+
     user_id: Optional[UUID] = None
 
 
 class UserLogin(BaseModel):
     """Schema for user login"""
+
     username: str
     password: str
 

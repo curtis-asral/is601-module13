@@ -24,8 +24,9 @@ SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     first_name = Column(String(50), nullable=False)
@@ -37,7 +38,9 @@ class User(Base):
     is_verified = Column(Boolean, default=False, nullable=False)
     last_login = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
 
     def __repr__(self):
         return f"<User(name={self.first_name} {self.last_name}, email={self.email})>"
@@ -52,10 +55,14 @@ class User(Base):
         return pwd_context.verify(plain_password, self.password)
 
     @staticmethod
-    def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    def create_access_token(
+        data: dict, expires_delta: Optional[timedelta] = None
+    ) -> str:
         """Create a JWT access token."""
         to_encode = data.copy()
-        expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+        expire = datetime.utcnow() + (
+            expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        )
         to_encode.update({"exp": expire})
         return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -74,22 +81,26 @@ class User(Base):
         """Register a new user with validation."""
         try:
             # Validate password length first
-            password = user_data.get('password', '')
+            password = user_data.get("password", "")
             if len(password) < 6:  # Strictly less than 6 characters
                 raise ValueError("Password must be at least 6 characters long")
-            
+
             # Check if email/username exists
-            existing_user = db.query(cls).filter(
-                (cls.email == user_data.get('email')) |
-                (cls.username == user_data.get('username'))
-            ).first()
-            
+            existing_user = (
+                db.query(cls)
+                .filter(
+                    (cls.email == user_data.get("email"))
+                    | (cls.username == user_data.get("username"))
+                )
+                .first()
+            )
+
             if existing_user:
                 raise ValueError("Username or email already exists")
 
             # Validate using Pydantic schema
             user_create = UserCreate.model_validate(user_data)
-            
+
             # Create new user instance
             new_user = cls(
                 first_name=user_create.first_name,
@@ -98,27 +109,29 @@ class User(Base):
                 username=user_create.username,
                 password=cls.hash_password(user_create.password),
                 is_active=True,
-                is_verified=False
+                is_verified=False,
             )
-            
+
             db.add(new_user)
             db.flush()
             return new_user
-            
+
         except ValidationError as e:
-            raise ValueError(str(e)) # pragma: no cover
+            raise ValueError(str(e))  # pragma: no cover
         except ValueError as e:
             raise e
 
     @classmethod
     def authenticate(cls, db, username: str, password: str) -> Optional[Dict[str, Any]]:
         """Authenticate user and return token with user data."""
-        user = db.query(cls).filter(
-            (cls.username == username) | (cls.email == username)
-        ).first()
+        user = (
+            db.query(cls)
+            .filter((cls.username == username) | (cls.email == username))
+            .first()
+        )
 
         if not user or not user.verify_password(password):
-            return None # pragma: no cover
+            return None  # pragma: no cover
 
         user.last_login = datetime.utcnow()
         db.commit()
@@ -128,7 +141,7 @@ class User(Base):
         token_response = Token(
             access_token=cls.create_access_token({"sub": str(user.id)}),
             token_type="bearer",
-            user=user_response
+            user=user_response,
         )
 
         return token_response.model_dump()

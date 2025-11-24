@@ -45,21 +45,27 @@ def test_password_mixin_invalid_short_password():
 def test_password_mixin_no_uppercase():
     """Test PasswordMixin with no uppercase letter."""
     data = {"password": "lowercase1"}
-    with pytest.raises(ValidationError, match="Password must contain at least one uppercase letter"):
+    with pytest.raises(
+        ValidationError, match="Password must contain at least one uppercase letter"
+    ):
         PasswordMixin(**data)
 
 
 def test_password_mixin_no_lowercase():
     """Test PasswordMixin with no lowercase letter."""
     data = {"password": "UPPERCASE1"}
-    with pytest.raises(ValidationError, match="Password must contain at least one lowercase letter"):
+    with pytest.raises(
+        ValidationError, match="Password must contain at least one lowercase letter"
+    ):
         PasswordMixin(**data)
 
 
 def test_password_mixin_no_digit():
     """Test PasswordMixin with no digit."""
     data = {"password": "NoDigitsHere"}
-    with pytest.raises(ValidationError, match="Password must contain at least one digit"):
+    with pytest.raises(
+        ValidationError, match="Password must contain at least one digit"
+    ):
         PasswordMixin(**data)
 
 
@@ -109,4 +115,3 @@ def test_user_login_invalid_password():
     data = {"username": "johndoe", "password": "short"}
     with pytest.raises(ValidationError):
         UserLogin(**data)
-

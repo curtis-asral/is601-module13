@@ -23,8 +23,7 @@ from app.database_init import init_db, drop_db
 # Logging Configuration
 # ======================================================================================
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -39,6 +38,7 @@ logger.info(f"Using database URL: {settings.DATABASE_URL}")
 # Create an engine and sessionmaker based on DATABASE_URL using factory functions
 test_engine = get_engine(database_url=settings.DATABASE_URL)
 TestingSessionLocal = get_sessionmaker(engine=test_engine)
+
 
 # ======================================================================================
 # Helper Functions
@@ -55,8 +55,9 @@ def create_fake_user() -> Dict[str, str]:
         "last_name": fake.last_name(),
         "email": fake.unique.email(),  # Ensure uniqueness where necessary
         "username": fake.unique.user_name(),
-        "password": fake.password(length=12)
+        "password": fake.password(length=12),
     }
+
 
 @contextmanager
 def managed_db_session():
@@ -78,6 +79,7 @@ def managed_db_session():
     finally:
         session.close()
 
+
 # ======================================================================================
 # Server Startup / Healthcheck
 # ======================================================================================
@@ -96,9 +98,12 @@ def wait_for_server(url: str, timeout: int = 30) -> bool:
         time.sleep(1)
     return False
 
+
 class ServerStartupError(Exception):
     """Raised when the test server fails to start properly"""
+
     pass
+
 
 # ======================================================================================
 # Primary Database Fixtures
@@ -136,6 +141,7 @@ def setup_test_database(request):
         drop_db()
         logger.info("Dropped test database tables.")
 
+
 @pytest.fixture
 def db_session(request) -> Generator[Session, None, None]:
     """
@@ -160,6 +166,7 @@ def db_session(request) -> Generator[Session, None, None]:
         session.close()
         logger.info("db_session teardown: done.")
 
+
 # ======================================================================================
 # Test Data Fixtures
 # ======================================================================================
@@ -167,6 +174,7 @@ def db_session(request) -> Generator[Session, None, None]:
 def fake_user_data() -> Dict[str, str]:
     """Provide a dictionary of fake user data."""
     return create_fake_user()
+
 
 @pytest.fixture
 def test_user(db_session: Session) -> User:
@@ -180,6 +188,7 @@ def test_user(db_session: Session) -> User:
     db_session.refresh(user)
     logger.info(f"Created test user with ID: {user.id}")
     return user
+
 
 @pytest.fixture
 def seed_users(db_session: Session, request) -> List[User]:
@@ -207,6 +216,7 @@ def seed_users(db_session: Session, request) -> List[User]:
     logger.info(f"Seeded {len(users)} users into the test database.")
     return users
 
+
 # ======================================================================================
 # FastAPI Server Fixture (Optional)
 # ======================================================================================
@@ -215,14 +225,14 @@ def fastapi_server():
     """
     Start and manage a FastAPI test server, if needed for integration tests.
     """
-    server_url = 'http://127.0.0.1:8000/'
+    server_url = "http://127.0.0.1:8000/"
     logger.info("Starting test server...")
 
     try:
         process = subprocess.Popen(
-            ['./venv/bin/python', 'main.py'],
+            ["./venv/bin/python", "main.py"],
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            stderr=subprocess.PIPE,
         )
         if not wait_for_server(server_url, timeout=30):
             raise ServerStartupError("Failed to start test server")
@@ -243,6 +253,7 @@ def fastapi_server():
             logger.warning("Test server did not terminate in time; killing it.")
             process.kill()
 
+
 # ======================================================================================
 # Browser and Page Fixtures (Optional)
 # ======================================================================================
@@ -253,8 +264,7 @@ def browser_context():
     """
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(
-            headless=True,
-            args=['--no-sandbox', '--disable-dev-shm-usage']
+            headless=True, args=["--no-sandbox", "--disable-dev-shm-usage"]
         )
         logger.info("Playwright browser launched.")
         try:
@@ -263,14 +273,14 @@ def browser_context():
             logger.info("Closing Playwright browser.")
             browser.close()
 
+
 @pytest.fixture
 def page(browser_context: Browser):
     """
     Provide a new browser page for each test.
     """
     context = browser_context.new_context(
-        viewport={'width': 1920, 'height': 1080},
-        ignore_https_errors=True
+        viewport={"width": 1920, "height": 1080}, ignore_https_errors=True
     )
     page = context.new_page()
     logger.info("Created new browser page.")
@@ -280,6 +290,7 @@ def page(browser_context: Browser):
         logger.info("Closing browser page and context.")
         page.close()
         context.close()
+
 
 # ======================================================================================
 # Pytest Command-Line Options and Test Collection
@@ -292,14 +303,15 @@ def pytest_addoption(parser):
         "--preserve-db",
         action="store_true",
         default=False,
-        help="Keep test database after tests, and skip table truncation."
+        help="Keep test database after tests, and skip table truncation.",
     )
     parser.addoption(
         "--run-slow",
         action="store_true",
         default=False,
-        help="Run tests marked as slow"
+        help="Run tests marked as slow",
     )
+
 
 def pytest_collection_modifyitems(config, items):
     """
@@ -310,6 +322,7 @@ def pytest_collection_modifyitems(config, items):
         for item in items:
             if "slow" in item.keywords:
                 item.add_marker(skip_slow)
+
 
 # ======================================================================================
 # How to Use This File

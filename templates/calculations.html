@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculations</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+<body class="container py-5">
+    <h2>Add Calculation</h2>
+    <form method="post" action="/calculations">
+        <div class="mb-3">
+            <label for="type" class="form-label">Type</label>
+            <select class="form-select" id="type" name="type" required>
+                <option value="addition">Addition</option>
+                <option value="subtraction">Subtraction</option>
+                <option value="multiplication">Multiplication</option>
+                <option value="division">Division</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="user_id" class="form-label">User ID</label>
+            <input type="text" class="form-control" id="user_id" name="user_id" required>
+        </div>
+        <div class="mb-3">
+            <label for="inputs" class="form-label">Inputs (comma separated)</label>
+            <input type="text" class="form-control" id="inputs" name="inputs" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Calculation</button>
+    </form>
+    <hr>
+    <h2>Browse Calculations</h2>
+    <div id="calculations-list">
+        <!-- Calculations will be rendered here by server -->
+        {% if calculations %}
+        <ul class="list-group">
+            {% for calc in calculations %}
+            <li class="list-group-item">
+                <strong>{{ calc.type }}</strong>: {{ calc.inputs }} = {{ calc.result }} (User: {{ calc.user_id }})
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No calculations found.</p>
+        {% endif %}
+    </div>
+    <a href="/" class="btn btn-link mt-3">Back to Home</a>
+</body>
+</html>

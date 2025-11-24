@@ -2,11 +2,13 @@ from enum import Enum
 from pydantic import BaseModel, validator
 from typing import List, Optional
 
+
 class CalculationType(str, Enum):
     addition = "addition"
     subtraction = "subtraction"
     multiplication = "multiplication"
     division = "division"
+
 
 class CalculationBase(BaseModel):
     type: CalculationType
@@ -18,6 +20,7 @@ class CalculationBase(BaseModel):
             raise ValueError()
         return v
 
+
 class CalculationCreate(CalculationBase):
     user_id: str
 
@@ -28,10 +31,12 @@ class CalculationCreate(CalculationBase):
                 raise ValueError()
         return v
 
+
 class CalculationUpdate(BaseModel):
     type: Optional[CalculationType]
     inputs: Optional[List[float]]
     user_id: Optional[str]
+
 
 class CalculationResponse(CalculationBase):
     id: int

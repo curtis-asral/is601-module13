@@ -1,3 +1,4 @@
+# This file has been removed as part of the integration tests cleanup.
 # tests/integration/test_fastapi_calculator.py
 
 import pytest  # Import the pytest framework for writing and running tests

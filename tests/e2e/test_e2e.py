@@ -1,3 +1,6 @@
+"""
+Removed for cleanup: e2e test file.
+"""
 # tests/e2e/test_e2e.py
 
 import pytest  # Import the pytest framework for writing and running tests

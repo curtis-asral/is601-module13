@@ -134,37 +134,43 @@ def setup_test_database(request):
     yield  # All tests run here
 
     preserve_db = request.config.getoption("--preserve-db")
+    """
+    Basic Examples:
+
+    1. Test DB operations:
+       def test_create_user(db_session):
+           user = User(username="test", email="test@example.com")
+           db_session.add(user)
+           db_session.commit()
+
+    2. Using fake data:
+       def test_with_fake_data(fake_user_data):
+           user = User(**fake_user_data)
+           # proceed with test logic...
+
+    3. Working with a test user:
+       def test_user_update(test_user):
+           test_user.username = "new_username"
+           # test logic...
+
+    4. Testing with multiple users:
+       @pytest.mark.parametrize('seed_users', [10], indirect=True)
+       def test_user_list(seed_users):
+           # seed_users contains 10 test users
+           assert len(seed_users) == 10
+
+    Command Examples:
+     - Basic run: pytest
+     - Keep database afterward (skip table truncation & drop): pytest --preserve-db
+     - Include slow tests: pytest --run-slow
+     - Show output: pytest -v -s
+    """
     if preserve_db:
         logger.info("Skipping drop_db due to --preserve-db flag.")
     else:
         logger.info("Cleaning up test database...")
         drop_db()
         logger.info("Dropped test database tables.")
-
-
-@pytest.fixture
-def db_session(request) -> Generator[Session, None, None]:
-    """
-    Provide a test-scoped database session.
-    By default, truncates all tables after each test to ensure isolation,
-    unless --preserve-db is passed.
-    """
-    session = TestingSessionLocal()
-    try:
-        yield session
-    finally:
-        logger.info("db_session teardown: about to truncate tables.")
-        preserve_db = request.config.getoption("--preserve-db")
-        if preserve_db:
-            logger.info("Skipping table truncation due to --preserve-db flag.")
-        else:
-            logger.info("Truncating all tables now.")
-            for table in reversed(Base.metadata.sorted_tables):
-                logger.info(f"Truncating table: {table}")
-                session.execute(table.delete())
-            session.commit()
-        session.close()
-        logger.info("db_session teardown: done.")
 
 
 # ======================================================================================
@@ -177,20 +183,7 @@ def fake_user_data() -> Dict[str, str]:
 
 
 @pytest.fixture
-def test_user(db_session: Session) -> User:
-    """
-    Create and return a single test user.
-    """
-    user_data = create_fake_user()
-    user = User(**user_data)
-    db_session.add(user)
-    db_session.commit()
-    db_session.refresh(user)
-    logger.info(f"Created test user with ID: {user.id}")
-    return user
 
-
-@pytest.fixture
 def seed_users(db_session: Session, request) -> List[User]:
     """
     Create multiple test users in the database.

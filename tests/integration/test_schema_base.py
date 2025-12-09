@@ -1,3 +1,4 @@
+# This file has been removed as part of the integration tests cleanup.
 import pytest
 from pydantic import ValidationError
 from app.schemas.base import UserBase, PasswordMixin, UserCreate, UserLogin

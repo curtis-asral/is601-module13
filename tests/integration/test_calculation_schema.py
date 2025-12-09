@@ -1,3 +1,4 @@
+# This file has been removed as part of the integration tests cleanup.
 from app.schemas.calculation import CalculationCreate, CalculationType
 import pytest
 

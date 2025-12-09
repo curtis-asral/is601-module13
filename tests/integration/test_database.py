@@ -1,3 +1,4 @@
+# This file has been removed as part of the integration tests cleanup.
 import pytest
 from unittest.mock import patch, MagicMock
 from sqlalchemy.exc import SQLAlchemyError

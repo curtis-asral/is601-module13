@@ -1,6 +1,50 @@
-Docker Hub Repo: https://hub.docker.com/repository/docker/curtisasral/601_module10/general
+# 🚀 Quick Start Guide
 
-Test Locally: `pytest -v`
+## Run Locally with Docker Compose
+
+### Prerequisites
+- Docker and Docker Compose installed
+- Python 3.10+ (for local development)
+
+### Steps to Run the App
+
+1. **Build the Docker image:**
+```bash
+docker-compose build
+```
+
+2. **Start the container:**
+```bash
+docker-compose up
+```
+
+The app will be available at `http://localhost:8000`
+
+### Run Tests Locally
+
+1. **Create a virtual environment:**
+```bash
+python3 -m venv venv
+source venv/bin/activate   # Mac/Linux
+venv\Scripts\activate.bat  # Windows
+```
+
+2. **Install dependencies:**
+```bash
+pip install -r requirements.txt
+```
+
+3. **Run tests:**
+```bash
+pytest -q
+```
+
+For verbose output:
+```bash
+pytest -v
+```
+
+---
 
 # 📦 Project Setup
 
